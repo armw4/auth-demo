@@ -13,7 +13,7 @@ module.exports = (grunt) ->
 
     autotest = grunt.config("testdrive.#{this.target}.autotest")
 
-    options = ['spec', '--coffee', '--verbose', '--captureExceptions']
+    options         = ['spec', '--coffee', '--verbose', '--captureExceptions']
     autotestOptions = ['--watch', 'lib', '--autotest']
 
     if autotest is true

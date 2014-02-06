@@ -1,3 +1,5 @@
+Authorizer = require '../../lib/authorization/authorizer'
+
 describe 'authorization', ->
   whiteList = null
 

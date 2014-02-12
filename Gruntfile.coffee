@@ -11,7 +11,7 @@ module.exports = (grunt) ->
   grunt.registerMultiTask 'testdrive', ->
     done = this.async()
 
-    autotest = grunt.config("testdrive.#{this.target}.autotest")
+    autotest = grunt.config "testdrive.#{this.target}.autotest"
 
     options         = ['spec', '--coffee', '--verbose', '--captureExceptions']
     autotestOptions = ['--watch', 'lib', '--autotest']

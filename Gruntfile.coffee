@@ -16,8 +16,7 @@ module.exports = (grunt) ->
     options         = ['spec', '--coffee', '--verbose', '--captureExceptions']
     autotestOptions = ['--watch', 'lib', '--autotest']
 
-    if autotest is true
-      options = options.concat autotestOptions
+    options = options.concat autotestOptions if autotest is true
 
     grunt.util.spawn
       cmd: 'jasmine-node'

@@ -13,6 +13,7 @@
   "devDependencies": {
     "grunt": "~0.4.2",
     "grunt-contrib-watch": "~0.5.3",
-    "sinon": "~1.7.3"
+    "sinon": "~1.7.3",
+    "jasmine-sinon": "~0.3.1"
   }
 }

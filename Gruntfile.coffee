@@ -3,7 +3,8 @@ module.exports = (grunt) ->
     pkg: grunt.file.readJSON 'package.json'
     files:
       mongo:
-        # in case mongod write relative files to it's own special place
+        # in case mongod writes relative files to it's own special place
+        # could not get this to work with relative file path.
         pid: '<%= process.cwd() %>/mongod.pid'
     testdrive:
       unit:

@@ -1,3 +1,5 @@
+path = require 'path'
+
 module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
@@ -9,16 +11,19 @@ module.exports = (grunt) ->
     testdrive:
       unit:
         autotest: true
+        specdir: 'unit'
       continuous:
         autotest: false
+        specdir: 'unit'
   # jasmine-contrib/grunt-jasmine-node has not been updated for 10 months.
   # it does not support the latest options for jasmine-node like growl support.
   grunt.registerMultiTask 'testdrive', ->
     done = this.async()
 
     autotest = grunt.config "testdrive.#{this.target}.autotest"
+    specdir  = path.join "spec", grunt.config "testdrive.#{this.target}.specdir"
 
-    options         = ['spec', '--coffee', '--verbose', '--captureExceptions']
+    options         = [specdir, '--coffee', '--verbose', '--captureExceptions']
     autotestOptions = ['--watch', 'lib', '--autotest']
 
     options = options.concat autotestOptions if autotest is true

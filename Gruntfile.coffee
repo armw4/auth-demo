@@ -38,6 +38,8 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'mongo:start', ->
     done = this.async()
+    
+    checkForExpiredDaemon()
 
     grunt.log.writeln 'Starting mongod...'
 
@@ -52,9 +54,33 @@ module.exports = (grunt) ->
         done()
 
   grunt.registerTask 'mongo:stop', ->
+    stopMongoDaemon()
+
+  grunt.registerTask 'default', 'testdrive:unit'
+
+  checkForExpiredDaemon = ->
     pidPath = grunt.config 'files.mongo.pid'
-    pid     = grunt.file.read pidPath
-    pid     = parseInt pid
+
+    grunt.log.writeln 'Checking for existing pid file.'
+
+    if grunt.file.exists pidPath
+      grunt.log.writeln 'Detected existing pid file for mongod.'
+      grunt.log.writeln 'Attempting to kill expired instance.'
+
+      stopMongoDaemon()
+    else
+      grunt.log.write   'No pid file found. Assuming mongod was either cleanly shutdown,'
+      grunt.log.writeln 'or is being started for the first time.'
+
+  stopMongoDaemon = ->
+    pidPath = grunt.config 'files.mongo.pid'
+
+    unless grunt.file.exists pidPath
+      grunt.log.error 'Aborting. No pid file found.'
+      return
+
+    pid = grunt.file.read pidPath
+    pid = parseInt pid
 
     grunt.log.writeln "Killing mongod instance with pid #{pid}."
 
@@ -63,5 +89,3 @@ module.exports = (grunt) ->
     grunt.log.writeln 'Deleting mongod pid file.'
 
     grunt.file.delete pidPath
-
-  grunt.registerTask 'default', 'testdrive:unit'

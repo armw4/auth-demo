@@ -1,27 +1,39 @@
-path = require 'path'
+path     = require 'path'
+mongoose = require 'mongoose'
+_        = require 'lodash'
 
 module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
+    # FIXME: read host, port, database, etc. from express app configuration
+    mongo:
+      host: 'localhost'
+      port: 27017
+      database: 'lux'
+      uri: 'mongodb://<%= mongo.host %>:<%= mongo.port %>/<%= mongo.database %>'
     files:
       mongo:
         # in case mongod writes relative files to it's own special place
         # could not get this to work with relative file path.
         pid: '<%= process.cwd() %>/mongod.pid'
-    testdrive:
+    test:
+      # you want this guy in development since it watches files
+      # for changes and autoruns tests
       unit:
         autotest: true
         specdir: 'unit'
-      continuous:
-        autotest: false
+      integration:
+        specdir: 'integration'
+      # you'll want to run this on CI server (one time run)
+      ci:
         specdir: 'unit'
   # jasmine-contrib/grunt-jasmine-node has not been updated for 10 months.
   # it does not support the latest options for jasmine-node like growl support.
-  grunt.registerMultiTask 'testdrive', ->
+  grunt.registerMultiTask 'test', ->
     done = this.async()
 
-    autotest = grunt.config "testdrive.#{this.target}.autotest"
-    specdir  = path.join "spec", grunt.config "testdrive.#{this.target}.specdir"
+    autotest = grunt.config "test.#{this.target}.autotest"
+    specdir  = path.join "spec", grunt.config "test.#{this.target}.specdir"
 
     options         = [specdir, '--coffee', '--verbose', '--captureExceptions']
     autotestOptions = ['--watch', 'lib', '--autotest']
@@ -34,11 +46,12 @@ module.exports = (grunt) ->
       opts:
         stdio: 'inherit'
       (error, result, code) ->
+        grunt.task.run 'mongo:disconnect', 'mongo:stop' if this.target is 'integration'
         done()
 
   grunt.registerTask 'mongo:start', ->
     done = this.async()
-    
+
     checkForExpiredDaemon()
 
     grunt.log.writeln 'Starting mongod...'
@@ -53,10 +66,30 @@ module.exports = (grunt) ->
       (error, result, code) ->
         done()
 
+  grunt.registerTask 'mongo:connect', ->
+    uri = grunt.config 'mongo.uri'
+
+    grunt.log.writeln "Attempting to connect to #{uri}."
+
+    mongoose.connect uri
+
+    grunt.log.writeln "Successfully connected to #{uri}."
+
+  grunt.registerTask 'mongo:disconnect', ->
+    uri = grunt.config 'mongo.uri'
+
+    grunt.log.writeln "Attempting to disconnect from #{uri}."
+
+    mongoose.disconnect()
+
+    grunt.log.writeln "Successfully disconnected from #{uri}."
+
   grunt.registerTask 'mongo:stop', ->
     stopMongoDaemon()
 
-  grunt.registerTask 'default', 'testdrive:unit'
+  grunt.registerTask 'default', 'test:unit'
+
+  grunt.registerTask 'test:live', ['mongo:start', 'mongo:connect', 'test:integration', 'mongo:disconnect', 'mongo:stop']
 
   checkForExpiredDaemon = ->
     pidPath = grunt.config 'files.mongo.pid'
@@ -85,7 +118,5 @@ module.exports = (grunt) ->
     grunt.log.writeln "Killing mongod instance with pid #{pid}."
 
     process.kill pid
-
-    grunt.log.writeln 'Deleting mongod pid file.'
 
     grunt.file.delete pidPath

@@ -46,7 +46,7 @@ module.exports = (grunt) ->
       opts:
         stdio: 'inherit'
       (error, result, code) ->
-        grunt.task.run 'mongo:disconnect', 'mongo:stop' if this.target is 'integration'
+        grunt.task.run 'mongo:disconnect', 'mongo:stop' if this.target is 'integration' and process.env.NODE_ENV is 'development'
         done()
 
   grunt.registerTask 'mongo:start', ->
@@ -89,7 +89,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'default', 'test:unit'
 
-  grunt.registerTask 'test:live', ['mongo:start', 'mongo:connect', 'test:integration', 'mongo:disconnect', 'mongo:stop']
+  grunt.registerTask 'test:live', ['mongo:start', 'mongo:connect', 'test:integration']
 
   checkForExpiredDaemon = ->
     pidPath = grunt.config 'files.mongo.pid'

@@ -16,12 +16,12 @@ module.exports = (grunt) ->
         # in case mongod writes relative files to it's own special place
         # could not get this to work with relative file path.
         pid: '<%= process.cwd() %>/mongod.pid'
-    test:
+    jasmine:
       # you want this guy in development since it watches files for changes and autoruns tests
       unit:
         autotest: true
         specdir: 'unit'
-      # use test:integration:development target to trigger this guy
+      # use jasmine:integration:development target to trigger this guy
       integration:
         specdir: 'integration'
       # you'll want to run this on CI server (does not watch files or autorun test suite...one time run)
@@ -29,11 +29,11 @@ module.exports = (grunt) ->
         specdir: 'unit'
   # jasmine-contrib/grunt-jasmine-node has not been updated for 10 months.
   # it does not support the latest options for jasmine-node like growl support.
-  grunt.registerMultiTask 'test', ->
+  grunt.registerMultiTask 'jasmine', ->
     done = this.async()
 
-    autotest = grunt.config "test.#{this.target}.autotest"
-    specdir  = path.join "spec", grunt.config "test.#{this.target}.specdir"
+    autotest = grunt.config "jasmine.#{this.target}.autotest"
+    specdir  = path.join "spec", grunt.config "jasmine.#{this.target}.specdir"
 
     options         = [specdir, '--coffee', '--verbose', '--captureExceptions']
     autotestOptions = ['--watch', 'lib', '--autotest']
@@ -86,13 +86,13 @@ module.exports = (grunt) ->
   grunt.registerTask 'mongo:stop', ->
     stopMongoDaemon()
 
-  grunt.registerTask 'default', 'test:unit'
+  grunt.registerTask 'default', 'jasmine:unit'
 
   # NOTE: this should only be run during development.
-  grunt.registerTask 'test:integration:development', ['mongo:start', 'mongo:connect', 'test:integration', 'mongo:disconnect', 'mongo:stop']
+  grunt.registerTask 'jasmine:integration:development', ['mongo:start', 'mongo:connect', 'jasmine:integration', 'mongo:disconnect', 'mongo:stop']
 
   # in ci enrionment (i.e. Team City), mongo server will already be running on remote computer; so no need to start/stop
-  grunt.registerTask 'test:integration:ci', ['mongo:connect', 'test:integration', 'mongo:disconnect']
+  grunt.registerTask 'jasmine:integration:ci', ['mongo:connect', 'jasmine:integration', 'mongo:disconnect']
 
   checkForExpiredDaemon = ->
     pidPath = grunt.config 'files.mongo.pid'

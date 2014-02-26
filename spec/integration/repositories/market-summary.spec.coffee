@@ -4,8 +4,9 @@ describe 'market-summary', ->
   MarketSummary = require '../../../lib/repositories/market-summary'
   mongoose      = require 'mongoose'
   db            = mongoose.connection.db
+  Q             = require 'q'
 
-  beforeEach ->
+  beforeEach (done) ->
     sinon.stub User, 'current', ->
       individualKey: '999999999999'
       socialSecurityNumber: '000000009'
@@ -14,13 +15,12 @@ describe 'market-summary', ->
       userId: User.current().individualKey
       preferences: ['STATE STREET BANK', 'OLEAH BRANCH']
 
-    marketSummaryModel = new MarketSummarySchema marketSummary
-    marketSummaryModel.save()
+    MarketSummary.save(marketSummary).done done
 
-  afterEach ->
+  afterEach (done) ->
     User.current.restore()
-    db.dropCollection 'users'
+    Q.nfcall(db.dropCollection, 'users').done done
 
   describe 'get', ->
     it 'gets market summaries for the current user', ->
-      expect(User.current().individualKey).toEqual 'iiiii'
+      expect().toEqual 'iiiii'

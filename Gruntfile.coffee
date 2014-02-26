@@ -5,7 +5,7 @@ _        = require 'lodash'
 module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
-    # FIXME: read host, port, database, etc. from express app configuration
+    # FIXME: read host, port, database, etc. from express app configuration (or some environment based config)
     mongo:
       host: 'localhost'
       port: 27017
@@ -17,14 +17,14 @@ module.exports = (grunt) ->
         # could not get this to work with relative file path.
         pid: '<%= process.cwd() %>/mongod.pid'
     test:
-      # you want this guy in development since it watches files
-      # for changes and autoruns tests
+      # you want this guy in development since it watches files for changes and autoruns tests
       unit:
         autotest: true
         specdir: 'unit'
+      # use test:integration:development target to trigger this guy
       integration:
         specdir: 'integration'
-      # you'll want to run this on CI server (one time run)
+      # you'll want to run this on CI server (does not watch files or autorun test suite...one time run)
       ci:
         specdir: 'unit'
   # jasmine-contrib/grunt-jasmine-node has not been updated for 10 months.
@@ -46,7 +46,6 @@ module.exports = (grunt) ->
       opts:
         stdio: 'inherit'
       (error, result, code) ->
-        grunt.task.run 'mongo:disconnect', 'mongo:stop' if this.target is 'integration' and process.env.NODE_ENV is 'development'
         done()
 
   grunt.registerTask 'mongo:start', ->
@@ -89,7 +88,11 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'default', 'test:unit'
 
-  grunt.registerTask 'test:live', ['mongo:start', 'mongo:connect', 'test:integration']
+  # NOTE: this should only be run during development.
+  grunt.registerTask 'test:integration:development', ['mongo:start', 'mongo:connect', 'test:integration', 'mongo:disconnect', 'mongo:stop']
+
+  # in ci enrionment (i.e. Team City), mongo server will already be running on remote computer; so no need to start/stop
+  grunt.registerTask 'test:integration:ci', ['mongo:connect', 'test:integration', 'mongo:disconnect']
 
   checkForExpiredDaemon = ->
     pidPath = grunt.config 'files.mongo.pid'
@@ -102,8 +105,7 @@ module.exports = (grunt) ->
 
       stopMongoDaemon()
     else
-      grunt.log.write   'No pid file found. Assuming mongod was either cleanly shutdown,'
-      grunt.log.writeln 'or is being started for the first time.'
+      grunt.log.writeln 'No pid file found. Assuming mongod was either cleanly shutdown, or is being started for the first time.'
 
   stopMongoDaemon = ->
     pidPath = grunt.config 'files.mongo.pid'

@@ -5,12 +5,6 @@ _        = require 'lodash'
 module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
-    # FIXME: read host, port, database, etc. from express app configuration (or some environment based config)
-    mongo:
-      host: 'localhost'
-      port: 27017
-      database: 'lux'
-      uri: 'mongodb://<%= mongo.host %>:<%= mongo.port %>/<%= mongo.database %>'
     files:
       mongo:
         # in case mongod writes relative files to it's own special place
@@ -66,13 +60,11 @@ module.exports = (grunt) ->
         done()
 
   grunt.registerTask 'mongo:connect', ->
-    uri = grunt.config 'mongo.uri'
+    grunt.log.writeln 'Attempting to connect to database.'
 
-    grunt.log.writeln "Attempting to connect to #{uri}."
+    require './lib/mongoose'
 
-    mongoose.connect uri
-
-    grunt.log.writeln "Successfully connected to #{uri}."
+    grunt.log.writeln 'Successfully connected to database.'
 
   grunt.registerTask 'mongo:disconnect', ->
     uri = grunt.config 'mongo.uri'

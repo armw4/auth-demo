@@ -1,5 +1,4 @@
 Authorizer = require '../../../lib/authorization/authorizer'
-User       = require '../../../lib/user'
 
 describe 'authorization', ->
   whiteList = null

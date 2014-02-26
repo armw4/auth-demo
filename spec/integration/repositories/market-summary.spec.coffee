@@ -1,8 +1,6 @@
 describe 'market-summary', ->
   sinon         = require 'sinon'
-  User          = require '../../../lib/user'
   MarketSummary = require '../../../lib/repositories/market-summary'
-  mongoose      = require 'mongoose'
   db            = mongoose.connection.db
   Q             = require 'q'
   marketSummary = null

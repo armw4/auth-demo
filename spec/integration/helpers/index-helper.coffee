@@ -4,9 +4,6 @@
 User     = require '../../../lib/user'
 mongoose = require '../../../lib/mongoose'
 
-# establish connection to database for integration tests
-mongoose.connect2()
-
 module.exports =
   User: User
   mongoose: mongoose

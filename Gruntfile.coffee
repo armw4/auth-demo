@@ -22,6 +22,8 @@ module.exports = (grunt) ->
         specdir: 'unit'
   # jasmine-contrib/grunt-jasmine-node has not been updated for 10 months.
   # it does not support the latest options for jasmine-node like growl support.
+  # so shelling out to subprocess instead. easier than working directly against
+  # API (IMHO).
   grunt.registerMultiTask 'jasmine', ->
     done = this.async()
 

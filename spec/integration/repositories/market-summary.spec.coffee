@@ -15,7 +15,7 @@ describe 'market-summary', ->
       preferences: ['STATE STREET BANK', 'OLEAH BRANCH']
 
     MarketSummary
-      .save(marketSummary)
+      .save marketSummary
       .fin done
 
   afterEach (done) ->
@@ -29,8 +29,8 @@ describe 'market-summary', ->
         .get()
         .fin done
         .done (hydratedMarketSummary) ->
-          expect(marketSummary.userId).toEqual      hydratedMarketSummary.userId
-          expect(marketSummary.preferences).toEqual hydratedMarketSummary.preferences
+          expect(marketSummary.userId).toEqual hydratedMarketSummary.userId
+          expect(marketSummary.preferences.length).toEqual hydratedMarketSummary.preferences.length
 
     #describe 'no preferences exist for current user', ->
       #beforeEach ->

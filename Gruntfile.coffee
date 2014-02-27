@@ -72,10 +72,16 @@ module.exports = (grunt) ->
   grunt.registerTask 'default', 'jasmine:unit'
 
   # NOTE: this should only be run during development.
-  grunt.registerTask 'jasmine:integration:development', ['mongo:start', 'mongo:connect', 'jasmine:integration', 'mongo:disconnect', 'mongo:stop']
+  # we'll refrain from executing the mongo:connect task
+  # during test runs. the jasmine:integration target will
+  # assume the responsibility (spec-helper). otherwise we'd
+  # end up connecting to the database twice as jasmine-node
+  # is executed in a separate process. if starting node app,
+  # then do execute mongo:connect prior to doing so.
+  grunt.registerTask 'jasmine:integration:development', ['mongo:start', 'jasmine:integration', 'mongo:disconnect', 'mongo:stop']
 
   # in ci enrionment (i.e. Team City), mongo server will already be running on remote computer; so no need to start/stop
-  grunt.registerTask 'jasmine:integration:ci', ['mongo:connect', 'jasmine:integration', 'mongo:disconnect']
+  grunt.registerTask 'jasmine:integration:ci', ['jasmine:integration', 'mongo:disconnect']
 
   checkForExpiredDaemon = ->
     pidPath = grunt.config 'files.mongo.pid'

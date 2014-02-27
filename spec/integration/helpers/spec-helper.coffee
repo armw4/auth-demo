@@ -4,6 +4,8 @@
 User     = require '../../../lib/user'
 mongoose = require '../../../lib/mongoose'
 
+mongoose.connect2()
+
 module.exports =
   User: User
   mongoose: mongoose

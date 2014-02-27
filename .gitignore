@@ -1,3 +1,5 @@
-_SpecRunner.html
-/.grunt
+.grunt
+*.pid
 node_modules
+.grunt
+_SpecRunner.html

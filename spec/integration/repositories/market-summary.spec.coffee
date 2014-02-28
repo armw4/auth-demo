@@ -1,6 +1,6 @@
 describe 'market-summary', ->
   sinon              = require 'sinon'
-  MarketSummaryModel = require '../../../lib/models/market-summary'
+  MarketSummaryModel = require '../../../lib/market-summary/model'
   db                 = mongoose.connection.db
   Q                  = require 'q'
   marketSummary      = null

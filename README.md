@@ -17,7 +17,7 @@ Typically up to 4 components will reside in this directory:
 * `lib/<feature-name>/schema.js`          - mongoose schema definition
 * `lib/<feature-name>/service/js`         - rest service that communicates with external systems (gateway)
 
-i.e.
+#### Examples
 
 * `lib/market-summary/market-summary.js`
 * `lib/market-summary/model.js`

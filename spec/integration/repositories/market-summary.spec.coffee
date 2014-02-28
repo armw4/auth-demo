@@ -1,16 +1,16 @@
 describe 'market-summary', ->
-  sinon         = require 'sinon'
-  MarketSummary = require '../../../lib/repositories/market-summary'
-  db            = mongoose.connection.db
-  Q             = require 'q'
-  marketSummary = null
+  sinon              = require 'sinon'
+  MarketSummaryModel = require '../../../lib/models/market-summary'
+  db                 = mongoose.connection.db
+  Q                  = require 'q'
+  marketSummary      = null
 
   persistPreferencesForCurrentUser = (done) ->
     marketSummary =
       userId: User.current().individualKey
       preferences: ['STATE STREET BANK', 'OLEAH BRANCH']
 
-    MarketSummary
+    MarketSummaryModel
       .save marketSummary
       .fin done
 
@@ -31,7 +31,7 @@ describe 'market-summary', ->
         User.current.restore()
 
       it 'returns preferences', (done) ->
-        MarketSummary
+        MarketSummaryModel
           .get()
           .fin done
           .done (hydratedMarketSummary) ->
@@ -50,6 +50,6 @@ describe 'market-summary', ->
         User.current.restore()
 
       it 'does not return preferences', ->
-        hydratedMarketSummary = MarketSummary.get()
+        hydratedMarketSummary = MarketSummaryModel.get()
 
         expect(hydratedMarketSummary).toBeNull

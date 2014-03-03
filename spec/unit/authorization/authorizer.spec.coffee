@@ -1,35 +1,32 @@
-Authorizer = require '../../../lib/authorization/authorizer'
-sinon      = require 'sinon'
+describe 'authorizer', ->
+  describe 'authorize', ->
+    Authorizer = require '../../../lib/authorization/authorizer'
+    sinon      = require 'sinon'
 
-describe 'authorization', ->
-  whiteList = null
+    whiteList = ['ROLES_User', 'ROLES_Admin', 'ROLES_Anonymous']
 
-  describe "none of current user's roles exist in whitelist", ->
-    beforeEach ->
-      whiteList = ['ROLES_User', 'ROLES_Admin', 'ROLES_Anonymous']
+    describe "none of current user's roles exist in whitelist", ->
+      beforeEach ->
+        sinon.stub User, 'current', ->
+          roles: ['ROLES_None']
 
-      sinon.stub User, 'current', ->
-        roles: ['ROLES_None']
+      afterEach ->
+        User.current.restore()
 
-    afterEach ->
-      User.current.restore()
+      it "should return false", ->
+        result = Authorizer.authorize whiteList
 
-    it "should return false", ->
-      result = Authorizer.authorize whiteList
+        expect(result).toBe false
 
-      expect(result).toBe false
+    describe "at least one of current user's roles exist in whitelist", ->
+      beforeEach ->
+        sinon.stub User, 'current', ->
+          roles: ['ROLES_User']
 
-  describe "at least of current user's roles exist in whitelist", ->
-    beforeEach ->
-      whiteList = ['ROLES_User', 'ROLES_Admin', 'ROLES_Anonymous']
+      afterEach ->
+        User.current.restore()
 
-      sinon.stub User, 'current', ->
-        roles: ['ROLES_User']
+      it "should return true", ->
+        result = Authorizer.authorize whiteList
 
-    afterEach ->
-      User.current.restore()
-
-    it "should return true", ->
-      result = Authorizer.authorize whiteList
-
-      expect(result).toBe true
+        expect(result).toBe true

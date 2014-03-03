@@ -3,7 +3,7 @@ describe 'authorizer', ->
     Authorizer = require '../../../lib/authorization/authorizer'
     sinon      = require 'sinon'
 
-    whiteList = ['ROLES_User', 'ROLES_Admin', 'ROLES_Anonymous']
+    whiteList  = ['ROLES_User', 'ROLES_Admin', 'ROLES_Anonymous']
 
     describe "none of current user's roles exist in whitelist", ->
       beforeEach ->

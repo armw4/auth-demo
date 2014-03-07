@@ -1,4 +1,4 @@
-describe 'market-summary', ->
+describe 'market-summary-model', ->
   sinon              = require 'sinon'
   MarketSummaryModel = require '../../../lib/market-summary/model'
   db                 = mongoose.connection.db
@@ -49,7 +49,9 @@ describe 'market-summary', ->
       afterEach ->
         User.current.restore()
 
-      it 'does not return preferences', ->
-        hydratedMarketSummary = MarketSummaryModel.get()
-
-        expect(hydratedMarketSummary).toBeNull
+      it 'does not return preferences', (done) ->
+        MarketSummaryModel
+          .get()
+          .fin done
+          .done (hydratedMarketSummary) ->
+            expect(hydratedMarketSummary).toBeNull

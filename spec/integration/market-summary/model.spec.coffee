@@ -60,7 +60,6 @@ describe 'market-summary-model', ->
     describe 'userId is not set', ->
       it 'triggers a validation errror', (done) ->
         marketSummary =
-          userId: null
           preferences: ['One', 'Two', 'Three']
 
         failCallback = sinon.spy()
@@ -77,6 +76,21 @@ describe 'market-summary-model', ->
         marketSummary =
           userId: '21EC2020-3AEA-4069-A2DD-08002B30309D'
           preferences: undefined
+
+        failCallback = sinon.spy()
+
+        MarketSummaryModel
+          .save marketSummary
+          .fin done
+          .fail failCallback
+          .done ->
+            expect(failCallback).toHaveBeenCalled()
+
+    describe 'more than 4 preferences are selected', ->
+      it 'triggers a validation errror', (done) ->
+        marketSummary =
+          userId: '21EC2020-3AEA-4069-A2DD-08002B30309D'
+          preferences: ['One', 'Two', 'Three', 'Four', 'Five']
 
         failCallback = sinon.spy()
 

@@ -92,3 +92,4 @@ describe 'market-summary', ->
           .fin done
           .done (preferences) ->
             expect(preferences).toEqual []
+

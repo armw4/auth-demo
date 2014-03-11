@@ -56,7 +56,7 @@ describe 'market-summary-model', ->
 
   describe 'save', ->
     describe 'userId is not set', ->
-      it 'triggers a validation errror', (done) ->
+      it 'triggers a validation error', (done) ->
         marketSummary =
           preferences: ['One', 'Two', 'Three', 'Four']
 
@@ -70,7 +70,7 @@ describe 'market-summary-model', ->
             expect(failCallback).toHaveBeenCalled()
 
     describe 'preferences is not set', ->
-      it 'triggers a validation errror', (done) ->
+      it 'triggers a validation error', (done) ->
         marketSummary =
           userId: '21EC2020-3AEA-4069-A2DD-08002B30309D'
           preferences: undefined
@@ -85,7 +85,7 @@ describe 'market-summary-model', ->
             expect(failCallback).toHaveBeenCalled()
 
     describe 'more than 4 preferences are selected', ->
-      it 'triggers a validation errror', (done) ->
+      it 'triggers a validation error', (done) ->
         marketSummary =
           userId: '21EC2020-3AEA-4069-A2DD-08002B30309D'
           preferences: ['One', 'Two', 'Three', 'Four', 'Five']

@@ -60,7 +60,7 @@ describe 'market-summary-model', ->
     describe 'userId is not set', ->
       it 'triggers a validation errror', (done) ->
         marketSummary =
-          preferences: ['One', 'Two', 'Three']
+          preferences: ['One', 'Two', 'Three', 'Four']
 
         failCallback = sinon.spy()
 

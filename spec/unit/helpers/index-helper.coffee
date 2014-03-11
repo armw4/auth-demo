@@ -14,6 +14,8 @@ mongoose =
   # and still allowing components that indirectly depend on models/schemas
   # to remain unit testable.
   Schema: ->
+    path: ->
+      validate: ->
   model: ->
 
 module.exports =

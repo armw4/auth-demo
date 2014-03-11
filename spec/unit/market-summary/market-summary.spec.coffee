@@ -93,3 +93,24 @@ describe 'market-summary', ->
           .done (preferences) ->
             expect(preferences).toEqual []
 
+  describe 'save', ->
+    beforeEach ->
+      sinon.stub User, 'current', ->
+        individualKey: '21EC2020-3AEA-4069-A2DD-08002B30309D'
+
+      sinon.stub MarketSummaryModel, 'save', -> Q {}
+
+    afterEach ->
+      MarketSummaryModel.save.restore()
+      User.current.restore()
+
+    it "saves a new model containing the current user's id", (done) ->
+      MarketSummary
+        .save ['State Street Bank', 'Aohal Drift Hedge Fund']
+        .fin done
+        .done ->
+          marketSummary =
+            userId: '21EC2020-3AEA-4069-A2DD-08002B30309D'
+            preferences: ['State Street Bank', 'Aohal Drift Hedge Fund']
+
+          expect(MarketSummaryModel.save).toHaveBeenCalledWith marketSummary

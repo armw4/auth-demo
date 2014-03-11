@@ -7,7 +7,7 @@ describe 'market-summary', ->
   _                    = require 'lodash'
 
   describe 'get', ->
-    describe 'available preferences are returned by the market summary service', ->
+    describe 'available preferences are returned by the market summary service and the current user has not preferences saved', ->
       beforeEach ->
         sinon.stub MarketSummaryService, 'get', -> Q ['State Street Bank', 'Aohal Drift Hedge Fund']
         sinon.stub MarketSummaryModel, 'get', -> Q null

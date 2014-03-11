@@ -39,12 +39,10 @@ describe 'market-summary-model', ->
             expect(marketSummary.preferences.length).toEqual hydratedMarketSummary.preferences.length
 
     describe 'no preferences exist for current user', ->
-      beforeEach (done) ->
+      beforeEach ->
         sinon.stub User, 'current', ->
           individualKey: '8888888888'
           socialSecurityNumber: '000000009'
-
-        persistPreferencesForCurrentUser done
 
       afterEach ->
         User.current.restore()

@@ -1,10 +1,10 @@
 auth-demo
-=========
+---------
 
 Authorization sample in node.js
 
 Folder Structure
-================
+----------------
 
 Convention for folders is:
 
@@ -24,7 +24,8 @@ Typically up to 4 components will reside in this directory:
 * `lib/market-summary/schema.js`
 * `lib/market-summary/service.js`
 
-### Running Tests
+Running Tests
+-------------
 
 requires `jasmine-node@1.13.1`. `jasmine-node@2.0.0` has been released and of course comes cloaked with
 breaking changes. I'll work to upgrade us to `jasmine-node@2.0.0` as apart of a separate effort.

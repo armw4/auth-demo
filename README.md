@@ -53,7 +53,7 @@ $ grunt jasmine:unit --verbose
 If you don't want to do TDD (`jasmine:unit` blocks and auto runs tests after a source file change),
 then you can trigger a one time run via `jasmine:unit:ci`.
 
-#### Unit Tests (test environment)
+#### Unit Tests (build agent)
 
 ```shell
 $ grunt jasmine:unit:ci --verbose
@@ -66,7 +66,7 @@ $ cd checkout-dir
 $ grunt jasmine:integraton:development --verbose
 ```
 
-#### Integration Tests (test environment)
+#### Integration Tests (build agent)
 
 ```shell
 $ grunt jasmine:integraton:ci --verbose

@@ -60,8 +60,6 @@ module.exports = (grunt) ->
       (error, result, code) ->
         done()
 
-    freeResourcesOnProcessExit()
-
   grunt.registerTask 'mongo:connect', ->
     mongoose.connect2();
 
@@ -115,14 +113,3 @@ module.exports = (grunt) ->
     process.kill pid
 
     grunt.file.delete pidPath
-  
-  freeResourcesOnProcessExit = ->
-    # we should only get SIGINT signal in development Ctl+C, so blindly
-    # executing the stop task should be ok. in addition, this code is
-    # only executed on mongo:start, which is again a development environment
-    # only task (nice invariant here). need to test on Windows. I think SIGINT
-    # may only work on *nix platforms.
-    process.on 'SIGINT', ->
-      grunt.task.run 'mongo:disconnect', 'mongo:stop'
-
-      process.exit 0

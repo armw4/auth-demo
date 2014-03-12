@@ -31,3 +31,46 @@ requires `jasmine-node@1.13.1`. `jasmine-node@2.0.0` has been released and of co
 breaking changes. I'll work to upgrade us to `jasmine-node@2.0.0` as apart of a separate effort.
 
 Integration tests also require a local instance of mongodb (`jasmine:integraton:development` grunt target).
+
+#### Initial Setup
+
+```shell
+$ git clone repourl && cd checkout-dir
+$ npm install
+$ npm install -g grunt
+$ npm install -g jasmine-node@1.13.1
+```
+
+#### Unit Tests (development environment)
+
+> **NOTE:** The `jasmine:unit` target is a blocking operation.
+
+```shell
+$ cd checkout-dir
+$ grunt jasmine:unit --verbose
+```
+
+If you don't want to do TDD (`jasmine:unit` blocks and auto runs tests after a source file change),
+then you can trigger a one time run via `jasmine:unit:ci`.
+
+#### Unit Tests (test environment)
+
+```shell
+$ grunt jasmine:unit:ci --verbose
+```
+
+#### Integration Tests (development environment)
+
+```shell
+$ cd checkout-dir
+$ grunt jasmine:integraton:development --verbose
+```
+
+#### Integration Tests (test environment)
+
+```shell
+$ grunt jasmine:integraton:ci --verbose
+```
+
+The `jasmine:integraton:ci` target assumes that `mongod` is running on a remote computer and does
+not attempt to trigger the `mongo:start` and `mongo:stop` targets.

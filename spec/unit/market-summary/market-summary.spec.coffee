@@ -18,7 +18,7 @@ describe 'market-summary', ->
 
       it 'gives each preference a selected key', (done) ->
         MarketSummary
-          .get()
+          .get '21EC2020-3AEA-4069-A2DD-08002B30309D'
           .fin done
           .done (preferences) ->
             allPreferencesContainSelectedKey = _.every preferences, (preference) -> preference.hasOwnProperty 'selected'
@@ -27,7 +27,7 @@ describe 'market-summary', ->
 
       it 'returns each preference the market summary service returns', (done) ->
         MarketSummary
-          .get()
+          .get '21EC2020-3AEA-4069-A2DD-08002B30309D'
           .fin done
           .done (preferences) ->
             preferenceNames = _.pluck preferences, 'name'
@@ -45,7 +45,7 @@ describe 'market-summary', ->
 
       it 'returns an empty array', (done) ->
         MarketSummary
-          .get()
+          .get '21EC2020-3AEA-4069-A2DD-08002B30309D'
           .fin done
           .done (preferences) ->
             expect(preferences).toEqual []
@@ -54,9 +54,9 @@ describe 'market-summary', ->
       beforeEach ->
         sinon.stub MarketSummaryService, 'get', -> Q ['State Street Bank', 'Aohal Drift Hedge Fund']
 
-        sinon.stub MarketSummaryModel, 'get', ->
+        sinon.stub MarketSummaryModel, 'get', (individualKey) ->
           Q
-            userId: '21EC2020-3AEA-4069-A2DD-08002B30309D'
+            userId: individualKey
             preferences: ['State Street Bank']
 
       afterEach ->
@@ -65,7 +65,7 @@ describe 'market-summary', ->
 
       it "marks each preference as selected", (done) ->
         MarketSummary
-          .get()
+          .get '21EC2020-3AEA-4069-A2DD-08002B30309D'
           .fin done
           .done (preferences) ->
             preference1 =
@@ -95,22 +95,18 @@ describe 'market-summary', ->
 
   describe 'save', ->
     beforeEach ->
-      sinon.stub User, 'current', ->
-        individualKey: '21EC2020-3AEA-4069-A2DD-08002B30309D'
-
       sinon.stub MarketSummaryModel, 'save', -> Q {}
 
     afterEach ->
       MarketSummaryModel.save.restore()
-      User.current.restore()
 
-    it "saves a new model containing the current user's id", (done) ->
+    it "saves a new model", (done) ->
+      marketSummary =
+        individualKey: '21EC2020-3AEA-4069-A2DD-08002B30309D'
+        preferences: ['State Street Bank', 'Aohal Drift Hedge Fund']
+
       MarketSummary
-        .save ['State Street Bank', 'Aohal Drift Hedge Fund']
+        .save marketSummary
         .fin done
         .done ->
-          marketSummary =
-            userId: '21EC2020-3AEA-4069-A2DD-08002B30309D'
-            preferences: ['State Street Bank', 'Aohal Drift Hedge Fund']
-
           expect(MarketSummaryModel.save).toHaveBeenCalledWith marketSummary

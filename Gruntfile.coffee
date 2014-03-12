@@ -82,7 +82,7 @@ module.exports = (grunt) ->
   # after app terminates.
   grunt.registerTask 'jasmine:integration:development', ['mongo:start', 'jasmine:integration', 'mongo:stop']
 
-  # in ci enrionment (i.e. Team City), mongo server will already be running on remote computer; so no need to start/stop
+  # in ci enviroment (i.e. Team City), mongo server will already be running on remote computer; so no need to start/stop
   grunt.registerTask 'jasmine:integration:ci', ['jasmine:integration']
 
   checkForExpiredDaemon = ->

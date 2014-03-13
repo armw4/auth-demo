@@ -83,6 +83,21 @@ describe 'market-summary-model', ->
           .done ->
             expect(failCallback).toHaveBeenCalled()
 
+    describe 'no preferences are selected', ->
+      it 'triggers a validation error', (done) ->
+        marketSummary =
+          userId: '21EC2020-3AEA-4069-A2DD-08002B30309D'
+          preferences: []
+
+        failCallback = sinon.spy()
+
+        MarketSummaryModel
+          .save marketSummary
+          .fin done
+          .fail failCallback
+          .done ->
+            expect(failCallback).toHaveBeenCalled()
+
     describe 'preferences exist for the current user', ->
       beforeEach (done) ->
         marketSummary =

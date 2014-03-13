@@ -4,6 +4,23 @@ mongoose = require './lib/mongoose'
 module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
+    # you may set host, port, & database name for each enviroment
+    # environments must coincide with process.env.NODE_ENV (test, development, production, etc.)
+    #
+    # default values:
+    #
+    # host: 'localhost'
+    # port: 27017
+    # database: 'lux'
+    connection:
+      test:
+        host: 'vavt-mongo-comp'
+        database: 'lux-test'
+      mock:
+        host: 'vavt-mongo-comp'
+        database: 'lux-mock'
+      production:
+        host: 'vavp-mongo-comp'
     files:
       mongo:
         # in case mongod writes relative files to it's own special place
@@ -61,7 +78,9 @@ module.exports = (grunt) ->
         done()
 
   grunt.registerTask 'mongo:connect', ->
-    mongoose.connect2();
+    connectionOptions = grunt.config "connection.#{process.env.NODE_ENV}"
+
+    mongoose.connect2 connectionOptions
 
   grunt.registerTask 'mongo:disconnect', ->
     mongoose.disconnect()

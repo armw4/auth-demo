@@ -77,8 +77,22 @@ module.exports = (grunt) ->
       (error, result, code) ->
         done()
 
+  # environment can be overriden at task level.
+  # to connect using the 'test' connection, invoke
+  # the task as follows:
+  #
+  # mongo:connect:test
+  #
+  # syntax is:
+  #
+  # mongo:connect:<environment>
+  #
+  # we'll likely need to do this in Team City since exporting
+  # the NODE_ENV enviroment variable would cause UI tests to run
+  # with non-development configuration. this causes an issue due
+  # to assets being built/compiled in later build step.
   grunt.registerTask 'mongo:connect', ->
-    connectionOptions = grunt.config "connection.#{process.env.NODE_ENV}"
+    connectionOptions = grunt.config "connection.#{this.args[0] || process.env.NODE_ENV}"
 
     mongoose.connect2 connectionOptions
 

@@ -74,3 +74,31 @@ $ grunt jasmine:integraton:ci --verbose
 
 The `jasmine:integraton:ci` target assumes that `mongod` is running on a remote computer and does
 not attempt to trigger the `mongo:start` and `mongo:stop` targets.
+
+Outstanding Issues
+------------------
+
+#### Completed
+
+* resolve crazy `User.current()` guy (want to keep business/domain layer away from expressjs) ✔
+* read mongo environment configuration from gruntjs config ✔
+* add test case to ensure at least exactly 1 to 4 preferences are selected ✔
+
+#### Pending
+
+* revamp start/stop server logic ✗
+* break grunt tasks into separate files ✗
+* make live call to external web service to replace fake array of preferences (007 may have already done this guy) ✗
+* default selections for user if none saved in database ✗
+* port to branch inside github ✗
+
+Nice To Haves
+-------------
+
+#### Completed
+
+* remove global references to mongoose and User ✔
+
+#### Pending
+
+* upgrade to jasmine-node 2.0.0 (fix all breaking changes, beforeAll, afterAll hooks) ✗

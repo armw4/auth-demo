@@ -52,7 +52,7 @@ module.exports = (grunt) ->
 
     args = args.concat autotestArguments if autotest is true
 
-    exec 'jasmine-node', args, done
+    exec command: 'jasmine-node', args: args, done
 
   grunt.registerTask 'mongo:start', ->
     done = this.async()
@@ -64,7 +64,7 @@ module.exports = (grunt) ->
     pidPath = grunt.config 'files.pid.mongod'
     args    = ['--fork', '--pidfilepath', pidPath]
 
-    exec 'mongod', args, done
+    exec command: 'mongod', args: args, done
 
   # environment can be overriden at task level.
   # to connect using the 'test' connection, invoke
@@ -107,10 +107,10 @@ module.exports = (grunt) ->
   # in ci enviroment (i.e. Team City), mongo server will already be running on remote computer; so no need to start/stop
   grunt.registerTask 'jasmine:integration:ci', ['jasmine:integration']
 
-  exec = (command, args, done) ->
+  exec = (options, done) ->
     grunt.util.spawn
-      cmd: command
-      args: args
+      cmd: options.command
+      args: options.args
       opts:
         stdio: 'inherit'
       (error, result, code) ->

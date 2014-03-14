@@ -71,6 +71,11 @@ module.exports = (grunt) ->
 
     exec command: command, args: args, done
 
+  grunt.registerMultiTask 'stop', ->
+    processName = grunt.config "stop.#{this.target}.processname"
+
+    killProcess processName
+
   # environment can be overriden at task level.
   # to connect using the 'test' connection, invoke
   # the task as follows:
@@ -89,11 +94,6 @@ module.exports = (grunt) ->
     connectionOptions = grunt.config "connection.#{this.args[0] || process.env.NODE_ENV}"
 
     mongoose.connect2 connectionOptions
-
-  grunt.registerMultiTask 'stop', ->
-    processName = grunt.config "stop.#{this.target}.processname"
-
-    killProcess processName
 
   grunt.registerTask 'mongo:disconnect', ->
     mongoose.disconnect()

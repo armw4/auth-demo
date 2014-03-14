@@ -1,1 +1,1 @@
-require 'jasmine-sinon'
+require '../../index-helper'

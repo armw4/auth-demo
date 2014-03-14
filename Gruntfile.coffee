@@ -22,10 +22,10 @@ module.exports = (grunt) ->
       production:
         host: 'vavp-mongo-comp'
     files:
-      mongo:
+      pid:
         # in case mongod writes relative files to it's own special place
         # could not get this to work with relative file path.
-        pid: '<%= process.cwd() %>/mongod.pid'
+        mongod: '<%= process.cwd() %>/mongod.pid'
     jasmine:
       # you want this guy in development since it watches files for changes and autoruns tests
       unit:
@@ -47,35 +47,24 @@ module.exports = (grunt) ->
     autotest = grunt.config "jasmine.#{this.target}.autotest"
     specdir  = path.join "spec", grunt.config "jasmine.#{this.target}.specdir"
 
-    options         = [specdir, '--coffee', '--verbose', '--captureExceptions']
-    autotestOptions = ['--watch', 'lib', '--autotest']
+    args            = [specdir, '--coffee', '--verbose', '--captureExceptions']
+    autotestArguments = ['--watch', 'lib', '--autotest']
 
-    options = options.concat autotestOptions if autotest is true
+    args = args.concat autotestArguments if autotest is true
 
-    grunt.util.spawn
-      cmd: 'jasmine-node'
-      args: options
-      opts:
-        stdio: 'inherit'
-      (error, result, code) ->
-        done()
+    exec 'jasmine-node', args, done
 
   grunt.registerTask 'mongo:start', ->
     done = this.async()
 
-    checkForExpiredDaemon()
+    checkForExpiredProcess 'mongod'
 
     grunt.log.writeln 'Starting mongod...'
 
-    pidPath = grunt.config 'files.mongo.pid'
+    pidPath = grunt.config 'files.pid.mongod'
+    args    = ['--fork', '--pidfilepath', pidPath]
 
-    grunt.util.spawn
-      cmd: 'mongod'
-      args: ['--fork', '--pidfilepath', pidPath]
-      opts:
-        stdio: 'inherit'
-      (error, result, code) ->
-        done()
+    exec 'mongod', args, done
 
   # environment can be overriden at task level.
   # to connect using the 'test' connection, invoke
@@ -100,7 +89,7 @@ module.exports = (grunt) ->
     mongoose.disconnect()
 
   grunt.registerTask 'mongo:stop', ->
-    stopMongoDaemon()
+    killProcess 'mongod'
 
   grunt.registerTask 'default', 'jasmine:unit'
 
@@ -118,21 +107,30 @@ module.exports = (grunt) ->
   # in ci enviroment (i.e. Team City), mongo server will already be running on remote computer; so no need to start/stop
   grunt.registerTask 'jasmine:integration:ci', ['jasmine:integration']
 
-  checkForExpiredDaemon = ->
-    pidPath = grunt.config 'files.mongo.pid'
+  exec = (command, args, done) ->
+    grunt.util.spawn
+      cmd: command
+      args: args
+      opts:
+        stdio: 'inherit'
+      (error, result, code) ->
+        done()
+
+  checkForExpiredProcess = (processName) ->
+    pidPath = grunt.config "files.pid.#{processName}"
 
     grunt.log.writeln 'Checking for existing pid file.'
 
     if grunt.file.exists pidPath
-      grunt.log.writeln 'Detected existing pid file for mongod.'
+      grunt.log.writeln "Detected existing pid file for \"#{processName}\"."
       grunt.log.writeln 'Attempting to kill expired instance.'
 
-      stopMongoDaemon()
+      killProcess processName
     else
-      grunt.log.writeln 'No pid file found. Assuming mongod was either cleanly shutdown, or is being started for the first time.'
+      grunt.log.writeln "No pid file found. Assuming \"#{processName}\" was either cleanly shutdown, or is being started for the first time."
 
-  stopMongoDaemon = ->
-    pidPath = grunt.config 'files.mongo.pid'
+  killProcess = (processName)->
+    pidPath = grunt.config "files.pid.#{processName}"
 
     unless grunt.file.exists pidPath
       grunt.log.error 'Aborting. No pid file found.'
@@ -141,7 +139,7 @@ module.exports = (grunt) ->
     pid = grunt.file.read pidPath
     pid = parseInt pid
 
-    grunt.log.writeln "Killing mongod instance with pid #{pid}."
+    grunt.log.writeln "Killing \"#{processName}\" process with pid #{pid}."
 
     process.kill pid
 

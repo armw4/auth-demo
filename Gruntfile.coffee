@@ -90,13 +90,13 @@ module.exports = (grunt) ->
 
     mongoose.connect2 connectionOptions
 
-  grunt.registerTask 'mongo:disconnect', ->
-    mongoose.disconnect()
-
   grunt.registerMultiTask 'stop', ->
     processName = grunt.config "stop.#{this.target}.processname"
 
     killProcess processName
+
+  grunt.registerTask 'mongo:disconnect', ->
+    mongoose.disconnect()
 
   grunt.registerTask 'default', 'jasmine:unit'
 

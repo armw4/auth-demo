@@ -21,6 +21,12 @@ module.exports = (grunt) ->
         database: 'lux-mock'
       production:
         host: 'vavp-mongo-comp'
+    start:
+      mongod:
+        args: ['--fork', '--pidfilepath', '<%= files.pid.mongod %>']
+    stop:
+      mongod:
+        processname: 'mongod'
     files:
       pid:
         # in case mongod writes relative files to it's own special place
@@ -52,17 +58,18 @@ module.exports = (grunt) ->
 
     exec command: 'jasmine-node', args: args, done
 
-  grunt.registerTask 'mongo:start', ->
-    done = this.async()
+  grunt.registerMultiTask 'start', ->
+    done    = this.async()
+    command = this.target
 
-    checkForExpiredProcess 'mongod'
+    checkForExpiredProcess command
 
-    grunt.log.writeln 'Starting mongod...'
+    grunt.log.writeln "Starting #{command}..."
 
-    pidPath = grunt.config 'files.pid.mongod'
-    args    = ['--fork', '--pidfilepath', pidPath]
+    pidPath = grunt.config "files.pid.#{command}"
+    args    = grunt.config "start.#{command}.args"
 
-    exec command: 'mongod', args: args, done
+    exec command: command, args: args, done
 
   # environment can be overriden at task level.
   # to connect using the 'test' connection, invoke
@@ -86,8 +93,10 @@ module.exports = (grunt) ->
   grunt.registerTask 'mongo:disconnect', ->
     mongoose.disconnect()
 
-  grunt.registerTask 'mongo:stop', ->
-    killProcess 'mongod'
+  grunt.registerMultiTask 'stop', ->
+    processName = grunt.config "stop.#{this.target}.processname"
+
+    killProcess processName
 
   grunt.registerTask 'default', 'jasmine:unit'
 
@@ -100,19 +109,29 @@ module.exports = (grunt) ->
   # is executed in a separate process. if starting node app,
   # then do execute mongo:connect prior to doing so, and mongo:disconnect
   # after app terminates.
-  grunt.registerTask 'jasmine:integration:development', ['mongo:start', 'jasmine:integration', 'mongo:stop']
+  grunt.registerTask 'jasmine:integration:development', ['start:mongod', 'jasmine:integration', 'stop:mongod']
 
   # in ci enviroment (i.e. Team City), mongo server will already be running on remote computer; so no need to start/stop
   grunt.registerTask 'jasmine:integration:ci', ['jasmine:integration']
 
   exec = (options, done) ->
-    grunt.util.spawn
-      cmd: options.command
-      args: options.args
-      opts:
-        stdio: 'inherit'
-      (error, result, code) ->
-        done()
+    child =
+      grunt.util.spawn
+        cmd: options.command
+        args: options.args
+        opts:
+          stdio: 'inherit'
+        (error, result, code) ->
+          done()
+
+    logPid options.command, child.pid if options.logpid
+
+  logPid = (command, pid) ->
+    pidPath = grunt.config "files.pid.#{command}"
+
+    grunt.log.writeln "Generating pid file for \"#{command}\"."
+
+    grunt.file.write pidPath, pid
 
   checkForExpiredProcess = (processName) ->
     pidPath = grunt.config "files.pid.#{processName}"

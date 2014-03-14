@@ -73,7 +73,7 @@ $ grunt jasmine:integraton:ci --verbose
 ```
 
 The `jasmine:integraton:ci` target assumes that `mongod` is running on a remote computer and does
-not attempt to trigger the `mongo:start` and `mongo:stop` targets.
+not attempt to trigger the `start:mongod` and `stop:mongod` targets.
 
 Outstanding Issues
 ------------------

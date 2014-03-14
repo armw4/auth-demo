@@ -68,8 +68,6 @@ module.exports = (grunt) ->
     command = grunt.config "start.#{this.target}.command"
     command ?= this.target
 
-    grunt.log.writeln 'target = ' + command
-
     checkForExpiredProcess command
 
     grunt.log.writeln "Starting #{command}..."

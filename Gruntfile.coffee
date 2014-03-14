@@ -4,29 +4,12 @@ mongoose = require './lib/mongoose'
 module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
-    # you may set host, port, & database name for each enviroment
-    # environments must coincide with process.env.NODE_ENV (test, development, production, etc.)
-    #
-    # default values:
-    #
-    # host: 'localhost'
-    # port: 27017
-    # database: 'lux'
-    connection:
-      test:
-        host: 'vavt-mongo-comp'
-        database: 'lux-test'
-      mock:
-        host: 'vavt-mongo-comp'
-        database: 'lux-mock'
-      production:
-        host: 'vavp-mongo-comp'
     start:
       mongod:
         args: ['--fork', '--pidfilepath', '<%= files.pid.mongod %>']
       express:
         command: 'node'
-        args: 'app.js'
+        args: 'app'
     stop:
       mongod:
         processname: 'mongod'
@@ -74,47 +57,17 @@ module.exports = (grunt) ->
 
     pidPath = grunt.config "files.pid.#{command}"
     args    = grunt.config "start.#{command}.args"
+    logPid  = grunt.config "start.#{command}.logpid"
 
-    exec command: command, args: args, done
+    exec command: command, args: args, logpid: logPid, done
 
   grunt.registerMultiTask 'stop', ->
     processName = grunt.config "stop.#{this.target}.processname"
 
     killProcess processName
 
-  # environment can be overriden at task level.
-  # to connect using the 'test' connection, invoke
-  # the task as follows:
-  #
-  # mongo:connect:test
-  #
-  # syntax is:
-  #
-  # mongo:connect:<environment>
-  #
-  # we'll likely need to do this in Team City since exporting
-  # the NODE_ENV enviroment variable would cause UI tests to run
-  # with non-development configuration. this causes an issue due
-  # to assets being built/compiled in later build step.
-  grunt.registerTask 'mongo:connect', ->
-    connectionOptions = grunt.config "connection.#{this.args[0] || process.env.NODE_ENV}"
-
-    mongoose.connect2 connectionOptions
-
-  grunt.registerTask 'mongo:disconnect', ->
-    mongoose.disconnect()
-
   grunt.registerTask 'default', 'jasmine:unit'
 
-  # NOTE: this should only be run during development.
-  # we'll refrain from executing the mongo:connect or
-  # mongo:disconnect task during integration test runs.
-  # the jasmine:integration target will assume this responsibility
-  # via a helper file (see integration/helpers directory). otherwise we'd
-  # end up connecting to the database twice as jasmine-node
-  # is executed in a separate process. if starting node app,
-  # then do execute mongo:connect prior to doing so, and mongo:disconnect
-  # after app terminates.
   grunt.registerTask 'jasmine:integration:development', ['start:mongod', 'jasmine:integration', 'stop:mongod']
 
   # in ci enviroment (i.e. Team City), mongo server will already be running on remote computer; so no need to start/stop
@@ -135,7 +88,7 @@ module.exports = (grunt) ->
   logPid = (command, pid) ->
     pidPath = grunt.config "files.pid.#{command}"
 
-    grunt.log.writeln "Generating pid file for \"#{command}\"."
+    grunt.log.writeln "Generating pid file for \"#{command}\" with pid #{pid}."
 
     grunt.file.write pidPath, pid
 

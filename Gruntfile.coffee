@@ -24,9 +24,14 @@ module.exports = (grunt) ->
     start:
       mongod:
         args: ['--fork', '--pidfilepath', '<%= files.pid.mongod %>']
+      express:
+        command: 'node'
+        args: 'app.js'
     stop:
       mongod:
         processname: 'mongod'
+      express:
+        processname: 'express'
     files:
       pid:
         # in case mongod writes relative files to it's own special place
@@ -60,7 +65,10 @@ module.exports = (grunt) ->
 
   grunt.registerMultiTask 'start', ->
     done    = this.async()
-    command = this.target
+    command = grunt.config "start.#{this.target}.command"
+    command ?= this.target
+
+    grunt.log.writeln 'target = ' + command
 
     checkForExpiredProcess command
 

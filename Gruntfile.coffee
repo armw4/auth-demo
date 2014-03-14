@@ -42,12 +42,10 @@ module.exports = (grunt) ->
   # so shelling out to subprocess instead. easier than working directly against
   # API (IMHO).
   grunt.registerMultiTask 'jasmine', ->
-    done = this.async()
-
-    autotest = grunt.config "jasmine.#{this.target}.autotest"
-    specdir  = path.join "spec", grunt.config "jasmine.#{this.target}.specdir"
-
-    args            = [specdir, '--coffee', '--verbose', '--captureExceptions']
+    done              = this.async()
+    autotest          = grunt.config "jasmine.#{this.target}.autotest"
+    specdir           = path.join "spec", grunt.config "jasmine.#{this.target}.specdir"
+    args              = [specdir, '--coffee', '--verbose', '--captureExceptions']
     autotestArguments = ['--watch', 'lib', '--autotest']
 
     args = args.concat autotestArguments if autotest is true

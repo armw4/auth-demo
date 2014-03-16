@@ -1,5 +1,5 @@
-module.exports = function(app) {
-  app.set('connection', {
+module.exports = function() {
+  this.set('connection', {
     host: 'vavp-mongo-comp'
   });
 };

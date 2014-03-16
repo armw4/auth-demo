@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+// business/domain layer config (no dependency on express/app)
 require('./lib/config');
 
 var express  = require('express');
@@ -11,9 +12,13 @@ var user     = require('./routes/user');
 var http     = require('http');
 var path     = require('path');
 var mongoose = require('./lib/mongoose');
+
+// node/express app config
 var config   = require('./config/config');
 
 var app = express();
+
+config.load(app);
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -39,12 +44,10 @@ http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
-config.load(app);
-
-var connectionConfiguration = app.get('connection');
-
-mongoose.connect2(connectionConfiguration);
+mongoose.connect2(app.get('connection'));
 
 process.on('exit', function() {
   mongoose.disconnect();
 });
+
+process.emit('loaded');

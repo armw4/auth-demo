@@ -9,7 +9,8 @@ module.exports = (grunt) ->
         args: ['--fork', '--pidfilepath', '<%= files.pid.mongod %>']
       express:
         command: 'node'
-        args: 'app'
+        args: ['app']
+        detached: true
     stop:
       mongod:
         processname: 'mongod'
@@ -20,6 +21,7 @@ module.exports = (grunt) ->
         # in case mongod writes relative files to it's own special place
         # could not get this to work with relative file path.
         mongod: '<%= process.cwd() %>/mongod.pid'
+        express: '<%= process.cwd() %>/express.pid'
     jasmine:
       # you want this guy in development since it watches files for changes and autoruns tests
       unit:
@@ -51,15 +53,17 @@ module.exports = (grunt) ->
     command = grunt.config "start.#{this.target}.command"
     command ?= this.target
 
-    checkForExpiredProcess command
+    checkForExpiredProcess this.target
 
     grunt.log.writeln "Starting #{command}..."
 
-    pidPath = grunt.config "files.pid.#{command}"
-    args    = grunt.config "start.#{command}.args"
-    logPid  = grunt.config "start.#{command}.logpid"
+    config = grunt.config "start.#{this.target}"
 
-    exec command: command, args: args, logpid: logPid, done
+    args     = config.args
+    logPid   = config.logpid
+    detached = config.detached
+
+    exec command: command, args: args, logpid: logPid, detached: detached, done
 
   grunt.registerMultiTask 'stop', ->
     processName = grunt.config "stop.#{this.target}.processname"
@@ -79,11 +83,15 @@ module.exports = (grunt) ->
         cmd: options.command
         args: options.args
         opts:
-          stdio: 'inherit'
+          detached: options.detached
+          stdio: if options.detached then ['ignore', process.stdout, process.stderr] else 'inherit'
         (error, result, code) ->
           done()
 
+    child.stderr.on 'data', done
+
     logPid options.command, child.pid if options.logpid
+    child.unref()                     if options.detached
 
   logPid = (command, pid) ->
     pidPath = grunt.config "files.pid.#{command}"

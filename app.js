@@ -49,5 +49,3 @@ mongoose.connect2(app.get('connection'));
 process.on('exit', function() {
   mongoose.disconnect();
 });
-
-process.emit('loaded');

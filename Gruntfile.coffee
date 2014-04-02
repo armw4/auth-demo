@@ -62,6 +62,6 @@ module.exports = (grunt) ->
         cmd: options.command
         args: options.args
         opts:
-          stdio: 'pipe'
+          stdio: 'inherit'
         (error, result, code) ->
           done()
